@@ -139,15 +139,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const quantityForms = document.querySelectorAll('.quantity-form');
+   
 
         quantityForms.forEach(form => {
-        const itemId = form.dataset.itemId; // Tiyakin na tama ang spelling ng 'dataset'
+        const itemId = form.dataset.itemId; 
         const quantityInput = form.querySelector(`#quantity-input-${itemId}`);
         const quantityDown = form.querySelector(`#quantity-down-${itemId}`);
         const quantityUp = form.querySelector(`#quantity-up-${itemId}`);
         const maxQuantity = parseInt(quantityInput.getAttribute('max'));
 
-        // Debugging
         console.log(`Item ${itemId} elements:`, { quantityInput, quantityDown, quantityUp });
 
         quantityDown.addEventListener('click', () => {

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\CartItem;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
@@ -24,12 +25,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::preventLazyLoading();
+       
 
         //global authenticated user
         View::composer('*', function ($view) {
-            $view->with('authUser', Auth::user());
+            $user = Auth::user();
+        
+            $cartCount = 0;
+        
+            if ($user) {
+                $cartCount = CartItem::where('user_id', $user->id)->count();
+            }
+        
+            $view->with('authUser', $user);
+            $view->with('cartCount', $cartCount);
         });
+
         //authorization for admin
         Gate::define('admin-access', function (User $user) {
             return $user->is_admin;

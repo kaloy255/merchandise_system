@@ -82,8 +82,8 @@
                                 @auth
                                     @can('not-admin')
                                         
-                                        <form  action="{{ route('cart.add') }}"  method="POST" class="quick-add-form">
-                                            @csrf.
+                                        <form action="{{ route('cart.add') }}"   method="POST" class="quick-add-form">
+                                            @csrf
                                             <input type="hidden" name="user_id" value="{{ $authUser->id }}">
                                             <input type="hidden" name="product_id" value="{{ $product->id }}">
                                             <input type="hidden" name="quantity" value="1">
@@ -187,22 +187,21 @@
             <p class="mt-4 text-xs text-gray-500">By subscribing, you agree to our Privacy Policy and consent to receive updates from our company.</p>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM loaded, initializing cart functionality');
-            
+    
             // Get all quick add forms
             const quickAddForms = document.querySelectorAll('.quick-add-form');
             console.log(`Found ${quickAddForms.length} quick add forms`);
-            
+    
             // Get the cart icon element
             const cartIcon = document.getElementById('cart-icon');
             const cartCountElement = document.getElementById('cart-count');
-            
+    
             // Check if cart icon exists (will not exist for admin users)
             const isCartIconVisible = cartIcon !== null && cartCountElement !== null;
-            
+    
             // Function to create flying cart animation
             function createFlyingCartAnimation(startElement) {
                 // Skip animation if cart icon doesn't exist
@@ -210,36 +209,36 @@
                     console.log('Cart icon not found, skipping animation');
                     return;
                 }
-                
+    
                 // Create flying element
                 const flyingElement = document.createElement('div');
                 flyingElement.className = 'flying-cart-item';
-                
+    
                 // Get the starting position (product image or button)
                 const startRect = startElement.getBoundingClientRect();
-                
+    
                 // Get the ending position (cart icon)
                 const endRect = cartIcon.getBoundingClientRect();
-                
+    
                 // Style the flying element
                 flyingElement.style.cssText = `
-                    position: fixed;
-                    z-index: 9999;
-                    width: 20px;
-                    height: 20px;
-                    background-color: #4f46e5;
-                    border-radius: 50%;
-                    opacity: 0.8;
-                    left: ${startRect.left + startRect.width / 2}px;
-                    top: ${startRect.top + startRect.height / 2}px;
-                    transform: translate(-50%, -50%);
-                    transition: all 0.8s cubic-bezier(0.075, 0.82, 0.165, 1);
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                `;
-                
+                        position: fixed;
+                        z-index: 9999;
+                        width: 20px;
+                        height: 20px;
+                        background-color: #4f46e5;
+                        border-radius: 50%;
+                        opacity: 0.8;
+                        left: ${startRect.left + startRect.width / 2}px;
+                        top: ${startRect.top + startRect.height / 2}px;
+                        transform: translate(-50%, -50%);
+                        transition: all 0.8s cubic-bezier(0.075, 0.82, 0.165, 1);
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    `;
+    
                 // Append to body
                 document.body.appendChild(flyingElement);
-                
+    
                 // Trigger animation (after a small delay to ensure the element is rendered)
                 setTimeout(() => {
                     flyingElement.style.left = `${endRect.left + endRect.width / 2}px`;
@@ -247,17 +246,17 @@
                     flyingElement.style.width = '10px';
                     flyingElement.style.height = '10px';
                     flyingElement.style.opacity = '0';
-                    
+    
                     // Scale animation for cart icon
                     cartIcon.style.transform = 'scale(1)';
                     cartIcon.style.transition = 'transform 0.3s ease';
-                    
+    
                     setTimeout(() => {
                         cartIcon.style.transform = 'scale(1.4)';
-                        
+    
                         setTimeout(() => {
                             cartIcon.style.transform = 'scale(1)';
-                            
+    
                             // Remove flying element after animation completes
                             setTimeout(() => {
                                 if (document.body.contains(flyingElement)) {
@@ -268,6 +267,146 @@
                     }, 600);
                 }, 10);
             }
+    
+            // Function to update cart count
+            function updateCartCount(count) {
+                // Skip update if cart count element doesn't exist
+                if (!isCartIconVisible) {
+                    console.log('Cart count element not found, skipping update');
+                    return;
+                }
+    
+                cartCountElement.textContent = count;
+    
+                // Add pulse animation
+                cartCountElement.classList.add('animate-pulse');
+                setTimeout(() => {
+                    cartCountElement.classList.remove('animate-pulse');
+                }, 1000);
+            }
+            
+    
+            // Simpler implementation for adding to cart
+            quickAddForms.forEach((form, index) => {
+                const button = form.querySelector('.quick-add-btn');
+                const productId = form.querySelector('input[name="product_id"]').value;
+                const productElement = form.closest('.group'); // Find the parent product element
+    
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log(`Quick add button clicked for product ID: ${productId}`);
+    
+                    // Change button appearance to show loading
+                    this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                    this.disabled = true;
+    
+                    // Get form data
+                    const formData = new FormData(form);
+                    const csrfToken = form.querySelector('input[name="_token"]').value;
+                    const productData = {
+                        product_id: productId,
+                        quantity: 1,
+                        _token: csrfToken
+                    };
+    
+                    // Log the URL we're posting to
+                    console.log(`Posting to: ${form.action}`);
+    
+                    // Use simple XHR request instead of fetch for maximum compatibility
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', form.action, true);
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    
+                    // Prepare data for URL-encoded form submission
+                    const urlEncodedData = Object.keys(productData)
+                        .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(productData[key]))
+                        .join('&');
+    
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            console.log(`Response status: ${xhr.status}`);
+    
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                // Success
+                                console.log('Success response:', xhr.responseText);
+                                let responseData;
+                                try {
+                                    responseData = JSON.parse(xhr.responseText);
+    
+                                    // Only start the flying animation if cart icon exists
+                                    if (isCartIconVisible) {
+                                        createFlyingCartAnimation(button);
+    
+                                        // Update cart count if available
+                                        if (responseData.cart_count) {
+                                            updateCartCount(responseData.cart_count);
+                                        }
+                                    }
+    
+                                } catch (e) {
+                                    console.error('Error parsing JSON:', e);
+                                    responseData = {
+                                        message: 'Product added to cart!'
+                                    };
+                                }
+    
+                                // Show success feedback
+                                button.innerHTML = '<i class="fa-solid fa-check"></i>';
+                                button.classList.remove('text-gray-500');
+                                button.classList.add('text-green-500');
+    
+                                // Create and show a floating notification
+                                const notification = document.createElement('div');
+                                notification.className = 'fixed top-20 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50 shadow-md transition-opacity duration-500';
+                                notification.innerHTML = '<div class="flex items-center"><i class="fa-solid fa-check-circle mr-2"></i> Product added to cart!</div>';
+                                document.body.appendChild(notification);
+    
+                                // Remove notification after 3 seconds
+                                setTimeout(() => {
+                                    notification.style.opacity = '0';
+                                    setTimeout(() => {
+                                        document.body.removeChild(notification);
+                                    }, 500);
+                                }, 3000);
+                            } else {
+                                // Error
+                                console.error('Error response:', xhr.responseText);
+    
+                                // Show error feedback
+                                button.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i>';
+                                button.classList.remove('text-gray-500');
+                                button.classList.add('text-red-500');
+    
+                                // Create and show an error notification
+                                const notification = document.createElement('div');
+                                notification.className = 'fixed top-20 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50 shadow-md transition-opacity duration-500';
+                                notification.innerHTML = `<div class="flex items-center"><i class="fa-solid fa-exclamation-circle mr-2"></i> Failed to add product to cart</div>`;
+                                document.body.appendChild(notification);
+    
+                                // Remove notification after 3 seconds
+                                setTimeout(() => {
+                                    notification.style.opacity = '0';
+                                    setTimeout(() => {
+                                        document.body.removeChild(notification);
+                                    }, 500);
+                                }, 3000);
+                            }
+    
+                            // Reset button after delay
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="fa-solid fa-cart-plus"></i>';
+                                button.classList.remove('text-green-500', 'text-red-500');
+                                button.classList.add('text-gray-500');
+                                button.disabled = false;
+                            }, 2000);
+                        }
+                    };
+    
+                    // Send the request
+                    xhr.send(urlEncodedData);
+                });
+            });
         });
     </script>
     

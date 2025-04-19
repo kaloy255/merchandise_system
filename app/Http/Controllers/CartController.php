@@ -14,20 +14,19 @@ class CartController extends Controller
     {
         $userId = Auth::id();
     
-        // Get cart items for the authenticated user
-        $cartItemsRaw = CartItem::where('user_id', $userId)->with('product')->get();
+        $cartItemsRow = CartItem::where('user_id', $userId)->get();
     
         $cartItems = [];
         $total = 0;
     
-        foreach ($cartItemsRaw as $item) {
+        foreach ($cartItemsRow as $item) {
             $product = $item->product;
     
             if ($product) {
                 $subtotal = $product->price * $item->quantity;
     
                 $cartItems[] = [
-                    'id' => $item->id, // This is CartItem ID (important for delete/update)
+                    'id' => $item->id, 
                     'product' => $product,
                     'quantity' => $item->quantity,
                     'subtotal' => $subtotal
@@ -88,7 +87,7 @@ class CartController extends Controller
             }
     
             // Get total items in cart
-            $totalItems = CartItem::where('user_id', $userId)->sum('quantity');
+            $totalItems = CartItem::where('user_id', $userId)->count();
     
             if ($request->expectsJson()) {
                 return response()->json([
@@ -164,7 +163,6 @@ class CartController extends Controller
                 : redirect()->route('cart.index')->with('error', $errorMessage);
         }
     }
-
     public function remove($id)
     {
         $userId = Auth::id();

@@ -27,5 +27,13 @@ class DatabaseSeeder extends Seeder
                 'is_admin' => true,
                 'remember_token' => Str::random(10),
         ]);
+
+        User::factory()->create([
+            'name' => 'user',
+            'email' => 'user@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
+        ]);
     }
 }
