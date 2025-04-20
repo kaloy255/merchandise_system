@@ -11,23 +11,18 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        // Query builder for products
         $query = Product::query();
         
-        // Filter by category if provided
         if ($request->has('category') && !empty($request->category)) {
             $query->where('category', $request->category);
         }
         
-        // Search by name if provided
         if ($request->has('name') && !empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
         
-        // Order by latest
         $query->orderBy('created_at', 'desc');
         
-        // Get the results
         $products = $query->get();
         
         return view('products.index', [

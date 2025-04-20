@@ -13,7 +13,8 @@
 
     @if($cartItems)
 
-    <form id="checkout-form" action="{{ route('checkout.index') }}"  method="GET">
+   
+
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
                 <div class="flex items-center">
@@ -64,7 +65,7 @@
                                 </td>
                                 <td class="py-4 px-6 text-gray-800">₱{{ number_format($item['product']->price, 2) }}</td>
                                 <td class="py-4 px-6">
-                                    <form action="{{ route('cart.update', $item['id']) }}" method="POST" data-item-id="{{ $item['id'] }}" class="quantity-form flex items-center">
+                                    <form action="{{ route('cart.update', $item['id']) }}" method="POST" data-item-id="{{ $item['id'] }}" class="quantity-form asdsadsa flex items-center">
                                         @csrf
                                         @method('PATCH')
                                         <div class="flex items-center">
@@ -117,14 +118,17 @@
                         <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors">
                             <i class="fa-solid fa-arrow-left mr-2"></i> Continue Shopping
                         </a>
+                        <form id="checkout-form" action="{{ route('checkout.index') }}"  method="GET">
+        
                         <button type="submit" id="checkout-btn" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors opacity-50 cursor-not-allowed" disabled>
                             Checkout <i class="fa-solid fa-arrow-right ml-2"></i>
                         </button>
+                    </form>
+
                     </div>
                 </div>
             </div>
         </div>
-    </form>
     @else
     <div class="bg-white p-8 rounded-lg shadow-sm text-center">
         <div class="flex flex-col items-center justify-center">
@@ -136,7 +140,7 @@
             <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
                 Start Shopping <i class="fa-solid fa-arrow-right ml-2"></i>
             </a>
-        </div>
+                 </div>
     </div>
     @endif
 </div>

@@ -18,17 +18,16 @@
                 @csrf
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Left column: Main product info -->
                     <div class="lg:col-span-2 space-y-6">
-                        <!-- Product name -->
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                             <x-input  type="text" 
                                 id="name" 
                                 name="name" 
                                 placeholder="Enter product name" 
+                                value="{{ old('name') }}"
                             ></x-input>
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('name')"   class="mt-2" />
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -46,6 +45,7 @@
                                         placeholder="0.00" 
                                         required
                                         class="pl-7"
+                                        value="{{ old('price') }}"
                                     ></x-input>
                                 </div>
                                 <x-input-error :messages="$errors->get('price')" class="mt-2" />
@@ -60,6 +60,7 @@
                                     name="quantity" 
                                     placeholder="Enter quantity available" 
                                     min="0" 
+                                    value="{{ old('quantity') }}"
                                     required
                                     
                                 ></x-input>
@@ -75,11 +76,12 @@
                                 name="category" 
                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                             >
-                                <option value="">Select a category</option>
-                                <option value="men">Men</option>
-                                <option value="women">Women</option>
-                                <option value="kids">Kids</option>
+                                <option value="" {{ old('category') == '' ? 'selected' : '' }}>Select a category</option>
+                                <option value="men" {{ old('category') == 'men' ? 'selected' : '' }}>Men</option>
+                                <option value="women" {{ old('category') == 'women' ? 'selected' : '' }}>Women</option>
+                                <option value="kids" {{ old('category') == 'kids' ? 'selected' : '' }}>Kids</option>
                             </select>
+
                             <x-input-error :messages="$errors->get('category')" class="mt-2" />
                         </div>
 
@@ -91,14 +93,13 @@
                                 name="description" 
                                 rows="5" 
                                 placeholder="Enter product description and details"
+                                required
                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                            ></textarea>
+                            > {{ old('description') }}</textarea>
                         </div>
                     </div>
 
-                    <!-- Right column: Image upload and submit -->
                     <div class="lg:col-span-1 space-y-6">
-                        <!-- Image upload with preview -->
                         <div class="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300">
                             <div class="text-center">
                                 <div class="mt-1 flex justify-center">
@@ -111,7 +112,7 @@
                                     <div class="flex text-sm text-gray-600 justify-center">
                                         <label for="image" class="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none hover:text-blue-500">
                                             <span>Upload a photo</span>
-                                            <input id="image" name="image" type="file" class="sr-only" accept="image/*">
+                                            <input id="image" name="image" type="file" class="sr-only"  required  accept="image/*">
                                         </label>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG, GIF up to 2MB</p>

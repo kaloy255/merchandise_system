@@ -18,9 +18,7 @@
                 @method('PUT')
                 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Left column: Main product info -->
                     <div class="lg:col-span-2 space-y-6">
-                        <!-- Product name -->
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                             <x-input  
