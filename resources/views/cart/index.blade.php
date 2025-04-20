@@ -12,7 +12,8 @@
     @endif
 
     @if($cartItems)
-    <form id="checkout-form" {{-- action="{{ route('checkout.index') }} --}}" method="GET">
+
+    <form id="checkout-form" action="{{ route('checkout.index') }}"  method="GET">
         <div class="bg-white rounded-lg shadow-sm overflow-hidden">
             <div class="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
                 <div class="flex items-center">
@@ -37,65 +38,69 @@
                     </thead>
                     <tbody>
                         @foreach($cartItems as $item)
-                      
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="py-4 px-6">
-                                <input type="checkbox" name="selected_items[]" value="{{ $item['id'] }}" class="item-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                            </td>
-                            <td class="py-4 px-6">
-                                <div class="flex items-center">
-                                    <div class="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded-md overflow-hidden">
-                                        @if($item['product']->image)
-                                        <img
-                                            src="{{ asset('storage/' . $item['product']->image) }}"
-                                            alt="{{ $item['product']->name }}"
-                                            class="w-full h-full object-cover">
-                                        @else
-                                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                                            <i class="fa-solid fa-shirt text-gray-400 text-3xl"></i>
-                                        </div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-gray-800">{{ $item['product']->name }}</p>
-                                        <p class="text-sm text-gray-600">{{ ucfirst($item['product']->category) }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-4 px-6 text-gray-800">₱{{ number_format($item['product']->price, 2) }}</td>
-                            <td class="py-4 px-6">
-                                <form action="{{ route('cart.update', $item['id']) }}" method="POST" class="flex items-center quantity-form" data-item-id="{{ $item['id'] }}">
-                                    @csrf
-                                    @method('PATCH')
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="py-4 px-6">
+                                    <input type="checkbox" name="selected_items[]" value="{{ $item['id'] }}" class="item-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                </td>
+                                <td class="py-4 px-6">
                                     <div class="flex items-center">
-                                        <button type="button" class="quantity-down w-8 h-8 bg-gray-100 rounded-l-md flex items-center justify-center border border-gray-300" id="quantity-down-{{ $item['id'] }}">
-                                            <i class="fa-solid fa-minus text-xs text-gray-600"></i>
-                                        </button>
-                                        <input
-                                            type="number"
-                                            name="quantity"
-                                            value="{{ $item['quantity'] }}"
-                                            min="1"
-                                            max="{{ $item['product']->quantity }}"
-                                            class="w-14 h-8 text-center border-y border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                            id="quantity-input-{{ $item['id'] }}">
-                                        <button type="button" class="quantity-up w-8 h-8 bg-gray-100 rounded-r-md flex items-center justify-center border border-gray-300" id="quantity-up-{{ $item['id'] }}">
-                                            <i class="fa-solid fa-plus text-xs text-gray-600"></i>
-                                        </button>
+                                        <div class="w-16 h-16 flex-shrink-0 mr-4 bg-gray-100 rounded-md overflow-hidden">
+                                            @if($item['product']->image)
+                                            <img
+                                                src="{{ asset('storage/' . $item['product']->image) }}"
+                                                alt="{{ $item['product']->name }}"
+                                                class="w-full h-full object-cover">
+                                            @else
+                                            <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                                <i class="fa-solid fa-shirt text-gray-400 text-3xl"></i>
+                                            </div>
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-800">{{ $item['product']->name }}</p>
+                                            <p class="text-sm text-gray-600">{{ ucfirst($item['product']->category) }}</p>
+                                        </div>
                                     </div>
-                                </form>
-                            </td>
-                            <td class="py-4 px-6 font-medium text-gray-800">₱{{ number_format($item['subtotal'], 2) }}</td>
-                            <td class="py-4 px-6">
-                                <form action="{{ route('cart.remove', $item['id']) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure you want to remove this item?')">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                                </td>
+                                <td class="py-4 px-6 text-gray-800">₱{{ number_format($item['product']->price, 2) }}</td>
+                                <td class="py-4 px-6">
+                                    <form action="{{ route('cart.update', $item['id']) }}" method="POST" data-item-id="{{ $item['id'] }}" class="quantity-form flex items-center">
+                                        @csrf
+                                        @method('PATCH')
+                                        <div class="flex items-center">
+                                            <input type="hidden" name="product_id" value="{{ $item['product']->id }}">
+                                            <button type="button" class="quantity-down w-8 h-8 bg-gray-100 rounded-l-md flex items-center justify-center border border-gray-300">
+                                                <i class="fa-solid fa-minus text-xs text-gray-600"></i>
+                                            </button>
+
+                                            <input
+                                                type="number"
+                                                name="quantity"
+                                                value="{{ $item['quantity'] }}"
+                                                min="1"
+                                                max="{{ $item['product']->quantity }}"
+                                                class="quantity-input w-14 h-8 text-center border-y border-gray-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                            >
+
+                                            <button type="button" class="quantity-up w-8 h-8 bg-gray-100 rounded-r-md flex items-center justify-center border border-gray-300">
+                                                <i class="fa-solid fa-plus text-xs text-gray-600"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td class="py-4 px-6 font-medium text-gray-800">
+                                    ₱{{number_format($item['subtotal'], 2) }}
+                                </td>
+                                <td class="py-4 px-6">
+                                    <form action="{{ route('cart.remove', $item['id']) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800" onclick="return confirm('Are you sure you want to remove this item?')">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -135,82 +140,95 @@
     </div>
     @endif
 </div>
+@endsection
 
+@section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const quantityForms = document.querySelectorAll('.quantity-form');
-   
+        console.log('Found quantity forms:', quantityForms.length);
 
         quantityForms.forEach(form => {
-        const itemId = form.dataset.itemId; 
-        const quantityInput = form.querySelector(`#quantity-input-${itemId}`);
-        const quantityDown = form.querySelector(`#quantity-down-${itemId}`);
-        const quantityUp = form.querySelector(`#quantity-up-${itemId}`);
-        const maxQuantity = parseInt(quantityInput.getAttribute('max'));
+            const itemId = form.getAttribute('data-item-id');
+            const quantityInput = form.querySelector('.quantity-input');
+            const quantityDown = form.querySelector('.quantity-down');
+            const quantityUp = form.querySelector('.quantity-up');
+            
+            if (quantityInput) {
+                const maxQuantity = parseInt(quantityInput.getAttribute('max'));
+                console.log('Form setup for item:', itemId, 'max:', maxQuantity);
 
-        console.log(`Item ${itemId} elements:`, { quantityInput, quantityDown, quantityUp });
-
-        quantityDown.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) quantityInput.value = currentValue - 1;
-            updateCart(form);
-        });
-
-        quantityUp.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue < maxQuantity) quantityInput.value = currentValue + 1;
-            updateCart(form);
-        });
-
-        quantityInput.addEventListener('change', () => {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue < 1) quantityInput.value = 1;
-            if (currentValue > maxQuantity) quantityInput.value = maxQuantity;
-            updateCart(form);
-        });
-        });
-    
-    // Function to update cart via AJAX
-    async function updateCart(form) {
-        const formData = new FormData(form);
-        const url = form.getAttribute('action');
-        
-        // Laravel requires _method field for PATCH/PUT/DELETE requests
-        formData.append('_method', 'PATCH');
-        
-        fetch(url, {
-            method: 'POST', // Always POST with _method for Laravel
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the subtotal in the UI
-                const row = form.closest('tr');
-                const subtotalCell = row.querySelector('td:nth-child(5)');
-                subtotalCell.textContent = data.new_subtotal_formatted;
-                
-                // Update any selected total if item is checked
-                const checkbox = row.querySelector('.item-checkbox');
-                if (checkbox && checkbox.checked) {
-                    updateSelectedTotal();
+                // quantity minus button
+                if (quantityDown) {
+                    quantityDown.addEventListener('click', () => {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue > 1) quantityInput.value = currentValue - 1;
+                        updateCart(form);
+                    });
                 }
-            } else {
-                alert(data.message);
-                // Reset to original value if there was an error
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error updating cart:', error);
-            alert('Failed to update cart. Please try again.');
-        });
-    }
+                
+                // quantity plus button
+                if (quantityUp) {
+                    quantityUp.addEventListener('click', () => {
+                        let currentValue = parseInt(quantityInput.value);
+                        if (currentValue < maxQuantity) quantityInput.value = currentValue + 1;
+                        updateCart(form);
+                    });
+                }
 
+                // quantity input change
+                quantityInput.addEventListener('change', () => {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue < 1) quantityInput.value = 1;
+                    if (currentValue > maxQuantity) quantityInput.value = maxQuantity;
+                    updateCart(form);
+                });
+            }
+        });
+
+        // Function to update cart via AJAX
+        async function updateCart(form) {
+            const formData = new FormData(form);
+            const url = form.getAttribute('action');
+            console.log('Updating cart:', url);
+            
+            // Laravel requires _method field for PATCH/PUT/DELETE requests
+            formData.append('_method', 'PATCH');
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', // Always POST with _method for Laravel
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update the subtotal in the UI
+                    const row = form.closest('tr');
+                    const subtotalCell = row.querySelector('td:nth-child(5)');
+                    subtotalCell.textContent = data.new_subtotal_formatted;
+                    
+                    // Update any selected total if item is checked
+                    const checkbox = row.querySelector('.item-checkbox');
+                    if (checkbox && checkbox.checked) {
+                        updateSelectedTotal();
+                    }
+                } else {
+                    alert(data.message);
+                    // Reset to original value if there was an error
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error updating cart:', error);
+                alert('Failed to update cart. Please try again.');
+            }
+        }
+    
         // Checkbox functionality
         const selectAllCheckbox = document.getElementById('select-all');
         const itemCheckboxes = document.querySelectorAll('.item-checkbox');
@@ -218,6 +236,40 @@
         const deleteSelectedButton = document.getElementById('delete-selected');
         const selectedTotalElement = document.getElementById('selected-total');
         const selectedItemsCountElement = document.getElementById('selected-items-count');
+
+        // Calculate and update the total for selected items
+        function updateSelectedTotal() {
+            const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            let total = 0;
+
+            checkedCheckboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                const subtotalCell = row.querySelector('td:nth-child(5)');
+                const subtotalText = subtotalCell.textContent;
+                const subtotal = parseFloat(subtotalText.replace('₱', '').replace(',', ''));
+
+                if (!isNaN(subtotal)) {
+                    total += subtotal;
+                }
+            });
+
+            // Update the total display
+            selectedTotalElement.textContent = `₱${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            // Update the selected items count
+            const count = checkedCheckboxes.length;
+            if (count === 0) {
+                selectedItemsCountElement.textContent = 'No items selected';
+                checkoutButton.disabled = true;
+                checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
+                deleteSelectedButton.disabled = true;
+            } else {
+                selectedItemsCountElement.textContent = `${count} item(s) selected`;
+                checkoutButton.disabled = false;
+                checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                deleteSelectedButton.disabled = false;
+            }
+        }
 
         if (selectAllCheckbox) {
             // Select all functionality
@@ -246,42 +298,6 @@
 
                 selectAllCheckbox.checked = totalCheckboxes === checkedCheckboxes && totalCheckboxes > 0;
                 selectAllCheckbox.indeterminate = checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes;
-            }
-
-            // Calculate and update the total for selected items
-            function updateSelectedTotal() {
-                const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
-                let total = 0;
-
-                checkedCheckboxes.forEach(checkbox => {
-                    const row = checkbox.closest('tr');
-                    const subtotalCell = row.querySelector('td:nth-child(5)');
-                    const subtotalText = subtotalCell.textContent;
-                    const subtotal = parseFloat(subtotalText.replace('₱', '').replace(',', ''));
-
-
-
-                    if (!isNaN(subtotal)) {
-                        total += subtotal;
-                    }
-                });
-
-                // Update the total display
-                selectedTotalElement.textContent = `₱${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-
-                // Update the selected items count
-                const count = checkedCheckboxes.length;
-                if (count === 0) {
-                    selectedItemsCountElement.textContent = 'No items selected';
-                    checkoutButton.disabled = true;
-                    checkoutButton.classList.add('opacity-50', 'cursor-not-allowed');
-                    deleteSelectedButton.disabled = true;
-                } else {
-                    selectedItemsCountElement.textContent = `${count} item(s) selected`;
-                    checkoutButton.disabled = false;
-                    checkoutButton.classList.remove('opacity-50', 'cursor-not-allowed');
-                    deleteSelectedButton.disabled = false;
-                }
             }
 
             // Delete selected items
@@ -333,5 +349,4 @@
         }
     });
 </script>
-
 @endsection

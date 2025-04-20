@@ -35,7 +35,6 @@ class CartController extends Controller
                 $total += $subtotal;
             }
         }
-    
         return view('cart.index', compact('cartItems', 'total'));
     }
 

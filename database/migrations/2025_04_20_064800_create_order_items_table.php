@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('product_name');
-            $table->decimal('price', 10, 2);
+            $table->foreignId('product_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('quantity');
+            $table->decimal('price', 10, 2);  // Price at time of purchase
+            $table->decimal('subtotal', 10, 2);  // price * quantity
+            $table->text('options')->nullable();  // For any product options/customizations
             $table->timestamps();
         });
     }
@@ -29,4 +30,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('order_items');
     }
-}; 
+};

@@ -4,69 +4,46 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
     use HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+    
     protected $fillable = [
         'user_id',
+        'order_number',
         'total_amount',
         'status',
-        'name',
-        'email',
-        'address',
-        'city',
-        'postal_code',
-        'phone',
         'payment_method',
-        'payment_status'
+        'shipping_name',
+        'shipping_email',
+        'shipping_address',
+        'shipping_city',
+        'shipping_postal_code',
+        'shipping_phone',
     ];
-
+    
     /**
-     * Get the user that placed the order.
+     * Get the user that owns the order.
      */
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
-
+    
     /**
-     * Get the items for the order.
+     * Get the order items for the order.
      */
-    public function items(): HasMany
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
-
+    
     /**
-     * Scope a query to only include pending orders.
+     * Get the products associated with the order through order items.
      */
-    public function scopePending($query)
+    public function products()
     {
-        return $query->where('status', 'pending');
+        return $this->hasManyThrough(Product::class, OrderItem::class, 'order_id', 'id', 'id', 'product_id');
     }
-
-    /**
-     * Scope a query to only include completed orders.
-     */
-    public function scopeCompleted($query)
-    {
-        return $query->where('status', 'completed');
-    }
-
-    /**
-     * Scope a query to only include orders created today.
-     */
-    public function scopeToday($query)
-    {
-        return $query->whereDate('created_at', now()->toDateString());
-    }
-} 
+}

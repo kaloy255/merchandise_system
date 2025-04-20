@@ -56,5 +56,25 @@ class User extends Authenticatable
     {
         return $this->hasMany(CartItem::class);
     }
-
+    
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    
+    /**
+     * Get the notifications for the user.
+     */
+    public function adminNotifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+    
+    /**
+     * Get the count of unread notifications.
+     */
+    public function unreadNotificationsCount()
+    {
+        return $this->adminNotifications()->whereNull('read_at')->count();
+    }
 }

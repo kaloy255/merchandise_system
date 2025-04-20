@@ -66,7 +66,7 @@
                                 src="{{ asset('storage/' . $product->image) }}" 
                                 alt="{{ $product->name }}"
                             >
-                            @if($product->quantity < 5 && $product->quantity > 0)
+                            @if($product->quantity <= 50 && $product->quantity > 0)
                                 <span class="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-1 rounded-full">Low Stock</span>
                             @elseif($product->quantity <= 0)
                                 <span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">Sold Out</span>
